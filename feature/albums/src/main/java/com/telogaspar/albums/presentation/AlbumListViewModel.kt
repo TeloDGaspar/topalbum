@@ -40,10 +40,7 @@ class AlbumListViewModel@Inject constructor(
             _uiState.value = AlbumListUiState.Loading
 
             runCatching {
-                repository.getTopAlbums(
-                    page = 0,
-                    limit = 100,
-                )
+                repository.getTopAlbums()
             }.onSuccess { albums ->
                 _uiState.value = AlbumListUiState.Success(
                     albums = albums,

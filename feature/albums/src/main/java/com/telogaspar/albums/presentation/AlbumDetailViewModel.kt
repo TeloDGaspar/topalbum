@@ -3,6 +3,7 @@ package com.telogaspar.albums.presentation
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.telogaspar.albums.domain.model.AlbumDetails
 import com.telogaspar.albums.domain.repository.AlbumListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +32,10 @@ class AlbumDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val albumId: String =
-        checkNotNull(savedStateHandle["albumId"])
+    private val route =
+        savedStateHandle.toRoute<AlbumDetailRoute>()
+
+    private val albumId = route.albumId
 
     private val _uiState = MutableStateFlow<AlbumDetailUiState>(
         AlbumDetailUiState.Loading

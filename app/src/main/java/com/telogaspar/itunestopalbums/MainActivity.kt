@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.telogaspar.albums.presentation.AlbumListScreen
+import com.telogaspar.itunestopalbums.navigation.AppNavigation
 import com.telogaspar.itunestopalbums.ui.theme.ITunesTopAlbumsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ITunesTopAlbumsTheme {
-                AlbumListScreen()
+                AppNavigation()
             }
         }
     }
