@@ -1,0 +1,49 @@
+# Gradle
+.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Local machine configuration
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Native builds
+.externalNativeBuild/
+.cxx/
+
+# Generated packages
+*.apk
+*.aab
+*.ap_
+
+# Signing
+*.jks
+*.keystore
+keystore.properties
+
+# Kotlin
+.kotlin/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*~
+
+# Secrets
+.env
+.env.*
+secrets.properties
