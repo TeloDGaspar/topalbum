@@ -29,41 +29,34 @@ sealed interface AlbumDetailUiState {
 @HiltViewModel
 class AlbumDetailViewModel @Inject constructor(
     private val repository: AlbumListRepository,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-    private val route =
-        savedStateHandle.toRoute<AlbumDetailRoute>()
+    private val _uiState =
+        MutableStateFlow<AlbumDetailUiState>(AlbumDetailUiState.Loading)
 
-    private val albumId = route.albumId
+    val uiState = _uiState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<AlbumDetailUiState>(
-        AlbumDetailUiState.Loading
-    )
+    private var albumId: String? = null
 
-    val uiState: StateFlow<AlbumDetailUiState> =
-        _uiState.asStateFlow()
+    fun loadAlbum(albumId: String) {
+        this.albumId = albumId
 
-    init {
-        loadAlbumDetails()
-    }
-
-    fun retry() {
-        loadAlbumDetails()
-    }
-
-    private fun loadAlbumDetails() {
         viewModelScope.launch {
             _uiState.value = AlbumDetailUiState.Loading
+
             runCatching {
                 repository.getDetailAlbum(albumId)
-            }.onSuccess { details ->
-                _uiState.value = AlbumDetailUiState.Success(details)
+            }.onSuccess { album ->
+                _uiState.value = AlbumDetailUiState.Success(album)
             }.onFailure { throwable ->
                 _uiState.value = AlbumDetailUiState.Error(
-                    message = throwable.message ?: "Unable to load album details"
+                    throwable.message ?: "Unable to load album details"
                 )
             }
         }
+    }
+
+    fun retry() {
+        albumId?.let(::loadAlbum)
     }
 }

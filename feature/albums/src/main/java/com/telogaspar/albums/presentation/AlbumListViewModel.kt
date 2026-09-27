@@ -42,9 +42,10 @@ class AlbumListViewModel@Inject constructor(
             runCatching {
                 repository.getTopAlbums()
             }.onSuccess { albums ->
-                _uiState.value = AlbumListUiState.Success(
-                    albums = albums,
-                )
+                _uiState.value = when {
+                    albums.isEmpty() -> AlbumListUiState.Empty
+                    else -> AlbumListUiState.Success(albums)
+                }
             }.onFailure { throwable ->
                 _uiState.value = AlbumListUiState.Error(
                     message = throwable.message
