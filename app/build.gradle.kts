@@ -5,6 +5,9 @@ plugins {
 
 android {
     namespace = "com.telogaspar.itunestopalbums"
+    buildFeatures {
+        buildConfig = true
+    }
     compileSdk {
         version = release(37) {
             minorApiLevel = 1
