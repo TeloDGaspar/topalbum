@@ -21,12 +21,15 @@ internal class AlbumMapper @Inject constructor() :
         }
 }
 
-
 internal class AlbumDetailsMapper @Inject constructor() :
     Mapper<AlbumDto, AlbumDetails> {
 
     override fun map(input: AlbumDto): AlbumDetails =
         AlbumDetails(
+            id = input.id.attributes.id,
+            name = input.name.label,
+            artist = input.artist.label,
+            artworkUrl = input.images.lastOrNull()?.label.orEmpty(),
             genre = input.category.attributes.label,
             releaseDate = input.releaseDate.attributes.label,
             price = input.price.label,

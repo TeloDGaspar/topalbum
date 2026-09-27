@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.telogaspar.albums.domain.model.AlbumDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,10 +56,10 @@ fun AlbumDetailScreen(
                     IconButton(
                         onClick = onBackClick,
                     ) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = "Back",
-//                        )
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                        )
                     }
                 },
             )
@@ -155,21 +158,21 @@ internal fun AlbumDetailContent(
             .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-//        AsyncImage(
-//            model = album.artworkUrl,
-//            contentDescription = "${album.name} artwork",
-//            modifier = Modifier
-//                .size(220.dp)
-//                .clip(RoundedCornerShape(20.dp)),
-//            contentScale = ContentScale.Crop,
-//        )
+        AsyncImage(
+            model = album.artworkUrl,
+            contentDescription = "${album.name} artwork",
+            modifier = Modifier
+                .size(220.dp)
+                .clip(RoundedCornerShape(20.dp)),
+            contentScale = ContentScale.Crop,
+        )
 
         Spacer(
             modifier = Modifier.height(24.dp),
         )
 
         Text(
-            text = "album.name",
+            text = album.name,
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center,
         )
@@ -179,7 +182,7 @@ internal fun AlbumDetailContent(
         )
 
         Text(
-            text = "album.artist",
+            text = album.artist,
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

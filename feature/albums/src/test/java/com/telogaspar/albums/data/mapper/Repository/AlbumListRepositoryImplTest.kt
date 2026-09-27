@@ -73,7 +73,19 @@ class AlbumListRepositoryImplTest {
     @Test
     fun `GIVEN albums already fetched WHEN detail is requested THEN api is not called again`() =
         runTest {
-            val dto = albumDto(id = "123")
+            val dto = albumDto(
+                id = "123",
+                name = "Album",
+                artist = "Artist",
+                imageUrl = "https://image.png",
+                genre = "Pop",
+                releaseDate = "September 25, 2026",
+                price = "$9.99",
+                trackCount = "10",
+                rights = "Copyright",
+                link = "https://music.apple.com/album/123",
+            )
+
             val response = topAlbumsResponse(
                 entries = listOf(dto),
             )
@@ -88,6 +100,10 @@ class AlbumListRepositoryImplTest {
             )
 
             val details = AlbumDetails(
+                id = "123",
+                name = "Album",
+                artist = "Artist",
+                artworkUrl = "https://image.png",
                 genre = "Pop",
                 releaseDate = "September 25, 2026",
                 price = "$9.99",
