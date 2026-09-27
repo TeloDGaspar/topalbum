@@ -12,8 +12,9 @@ import com.telogaspar.albums.domain.model.Album
 import com.telogaspar.albums.domain.model.AlbumDetails
 import java.io.IOException
 import retrofit2.HttpException
+import javax.inject.Inject
 
-internal class AlbumListRepositoryImpl(
+internal class AlbumListRepositoryImpl @Inject constructor(
     private val remoteDataSource: TopAlbumsListRemoteDataSource,
     private val albumMapper: AlbumMapper,
     private val albumDetailsMapper: AlbumDetailsMapper
@@ -22,7 +23,7 @@ internal class AlbumListRepositoryImpl(
     private var cachedEntries: List<AlbumDto>? = null
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    override suspend fun getTopAlbums(page: Int, limit: Int): List<Album> {
+    override suspend fun getTopAlbums(): List<Album> {
         return runCatching {
             val entries = getEntries()
 

@@ -61,10 +61,7 @@ class AlbumListRepositoryImplTest {
                 albumMapper.map(listOf(dto))
             } returns expected
 
-            val result = repository.getTopAlbums(
-                page = 0,
-                limit = 100,
-            )
+            val result = repository.getTopAlbums()
 
             assertEquals(expected, result)
 
@@ -111,10 +108,7 @@ class AlbumListRepositoryImplTest {
                 albumDetailsMapper.map(dto)
             } returns details
 
-            repository.getTopAlbums(
-                page = 0,
-                limit = 100,
-            )
+            repository.getTopAlbums()
 
             val result = repository.getDetailAlbum("123")
 

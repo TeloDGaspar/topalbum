@@ -24,7 +24,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://itunes.apple.com/us"
+    private const val BASE_URL = "https://itunes.apple.com/"
     private const val TIMEOUT_SECONDS = 20L
 
     @Provides
@@ -43,6 +43,13 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideGson(): Gson = GsonBuilder().create()
+
+    @Provides
+    @Singleton
+    fun provideLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
 
     @Provides
     @Singleton

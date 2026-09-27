@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.dagger.hilt)
 }
@@ -49,6 +50,12 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
 
     implementation(libs.kotlinx.coroutines.android)
+
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.hilt.navigation.compose)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
