@@ -1,12 +1,15 @@
 package com.telogaspar.albums.data.mapper
 
+import androidx.lifecycle.SavedStateHandle
 import com.telogaspar.albums.domain.exception.AlbumException
 import com.telogaspar.albums.domain.model.AlbumDetails
 import com.telogaspar.albums.domain.repository.AlbumListRepository
+import com.telogaspar.albums.presentation.AlbumDetailRoute
 import com.telogaspar.albums.presentation.AlbumDetailUiState
 import com.telogaspar.albums.presentation.AlbumDetailViewModel
 import com.telogaspar.albums.presentation.ErrorType
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +41,22 @@ class AlbumDetailViewModelTest {
     }
 
     @Test
-    fun `GIVEN repository returns album details WHEN album is loaded THEN success state contains album details`() =
+    fun `GIVEN viewModel is created WHEN load has not completed THEN loading state is shown`() =
+        runTest {
+            coEvery {
+                repository.getDetailAlbum("123")
+            } returns albumDetails(id = "123")
+
+            val viewModel = createViewModel(albumId = "123")
+
+            assertEquals(
+                AlbumDetailUiState.Loading,
+                viewModel.uiState.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN album id in saved state WHEN viewModel is created THEN album is loaded for that id`() =
         runTest {
             val details = albumDetails(
                 id = "123",
@@ -48,11 +66,7 @@ class AlbumDetailViewModelTest {
                 repository.getDetailAlbum("123")
             } returns details
 
-            val viewModel = AlbumDetailViewModel(
-                repository = repository,
-            )
-
-            viewModel.loadAlbum("123")
+            val viewModel = createViewModel(albumId = "123")
 
             advanceUntilIdle()
 
@@ -60,6 +74,10 @@ class AlbumDetailViewModelTest {
                 AlbumDetailUiState.Success(details),
                 viewModel.uiState.value,
             )
+
+            coVerify(exactly = 1) {
+                repository.getDetailAlbum("123")
+            }
         }
 
     @Test
@@ -69,11 +87,7 @@ class AlbumDetailViewModelTest {
                 repository.getDetailAlbum("123")
             } throws AlbumException.ApiException(code = 500, cause = RuntimeException())
 
-            val viewModel = AlbumDetailViewModel(
-                repository = repository,
-            )
-
-            viewModel.loadAlbum("123")
+            val viewModel = createViewModel(albumId = "123")
 
             advanceUntilIdle()
 
@@ -94,11 +108,7 @@ class AlbumDetailViewModelTest {
                 repository.getDetailAlbum("123")
             } throws AlbumException.NetworkException(IOException()) andThen details
 
-            val viewModel = AlbumDetailViewModel(
-                repository = repository,
-            )
-
-            viewModel.loadAlbum("123")
+            val viewModel = createViewModel(albumId = "123")
 
             advanceUntilIdle()
 
@@ -115,18 +125,20 @@ class AlbumDetailViewModelTest {
                 AlbumDetailUiState.Success(details),
                 viewModel.uiState.value,
             )
+
+            coVerify(exactly = 2) {
+                repository.getDetailAlbum("123")
+            }
         }
 
     @Test
-    fun `GIVEN album id does not exist WHEN album is loaded THEN error state is shown`() =
+    fun `GIVEN album id does not exist WHEN album is loaded THEN not found error state is shown`() =
         runTest {
             coEvery {
                 repository.getDetailAlbum("999")
             } throws AlbumException.NotFoundException("999")
 
-            val viewModel = AlbumDetailViewModel(repository)
-
-            viewModel.loadAlbum("999")
+            val viewModel = createViewModel(albumId = "999")
 
             advanceUntilIdle()
 
@@ -135,6 +147,12 @@ class AlbumDetailViewModelTest {
                 viewModel.uiState.value,
             )
         }
+
+    private fun createViewModel(albumId: String): AlbumDetailViewModel =
+        AlbumDetailViewModel(
+            savedStateHandle = SavedStateHandle(mapOf(AlbumDetailRoute.ALBUM_ID_KEY to albumId)),
+            repository = repository,
+        )
 
     private fun albumDetails(
         id: String,
