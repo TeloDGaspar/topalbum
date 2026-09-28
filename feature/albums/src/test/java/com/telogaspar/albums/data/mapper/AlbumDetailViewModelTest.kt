@@ -5,10 +5,10 @@ import com.telogaspar.albums.domain.model.AlbumDetails
 import com.telogaspar.albums.domain.repository.AlbumListRepository
 import com.telogaspar.albums.presentation.AlbumDetailUiState
 import com.telogaspar.albums.presentation.AlbumDetailViewModel
+import com.telogaspar.albums.presentation.ErrorType
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -19,6 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumDetailViewModelTest {
@@ -62,11 +63,11 @@ class AlbumDetailViewModelTest {
         }
 
     @Test
-    fun `GIVEN repository throws WHEN loading album details THEN error state is shown`() =
+    fun `GIVEN repository throws api exception WHEN loading album details THEN server error state is shown`() =
         runTest {
             coEvery {
                 repository.getDetailAlbum("123")
-            } throws RuntimeException("Album not found")
+            } throws AlbumException.ApiException(code = 500, cause = RuntimeException())
 
             val viewModel = AlbumDetailViewModel(
                 repository = repository,
@@ -77,7 +78,7 @@ class AlbumDetailViewModelTest {
             advanceUntilIdle()
 
             assertEquals(
-                AlbumDetailUiState.Error("Album not found"),
+                AlbumDetailUiState.Error(ErrorType.Server),
                 viewModel.uiState.value,
             )
         }
@@ -91,7 +92,7 @@ class AlbumDetailViewModelTest {
 
             coEvery {
                 repository.getDetailAlbum("123")
-            } throws RuntimeException("network error") andThen details
+            } throws AlbumException.NetworkException(IOException()) andThen details
 
             val viewModel = AlbumDetailViewModel(
                 repository = repository,
@@ -102,7 +103,7 @@ class AlbumDetailViewModelTest {
             advanceUntilIdle()
 
             assertEquals(
-                AlbumDetailUiState.Error("network error"),
+                AlbumDetailUiState.Error(ErrorType.Network),
                 viewModel.uiState.value,
             )
 
@@ -129,8 +130,9 @@ class AlbumDetailViewModelTest {
 
             advanceUntilIdle()
 
-            assertTrue(
-                viewModel.uiState.value is AlbumDetailUiState.Error
+            assertEquals(
+                AlbumDetailUiState.Error(ErrorType.NotFound),
+                viewModel.uiState.value,
             )
         }
 

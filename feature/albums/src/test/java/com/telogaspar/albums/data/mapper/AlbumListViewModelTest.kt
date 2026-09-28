@@ -1,9 +1,11 @@
 package com.telogaspar.albums.data.mapper
 
+import com.telogaspar.albums.domain.exception.AlbumException
 import com.telogaspar.albums.domain.model.Album
 import com.telogaspar.albums.domain.repository.AlbumListRepository
 import com.telogaspar.albums.presentation.AlbumListUiState
 import com.telogaspar.albums.presentation.AlbumListViewModel
+import com.telogaspar.albums.presentation.ErrorType
 import io.mockk.coEvery
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
@@ -17,6 +19,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumListViewModelTest {
@@ -74,18 +77,35 @@ class AlbumListViewModelTest {
         }
 
     @Test
-    fun `GIVEN repository throws WHEN loading albums THEN error state is shown`() =
+    fun `GIVEN repository throws network exception WHEN loading albums THEN network error state is shown`() =
         runTest {
             coEvery {
                 repository.getTopAlbums()
-            } throws RuntimeException("network error")
+            } throws AlbumException.NetworkException(IOException())
 
             val viewModel = AlbumListViewModel(repository)
 
             advanceUntilIdle()
 
             assertEquals(
-                AlbumListUiState.Error("network error"),
+                AlbumListUiState.Error(ErrorType.Network),
+                viewModel.uiState.value,
+            )
+        }
+
+    @Test
+    fun `GIVEN repository throws unexpected exception WHEN loading albums THEN unknown error state is shown`() =
+        runTest {
+            coEvery {
+                repository.getTopAlbums()
+            } throws RuntimeException("boom")
+
+            val viewModel = AlbumListViewModel(repository)
+
+            advanceUntilIdle()
+
+            assertEquals(
+                AlbumListUiState.Error(ErrorType.Unknown),
                 viewModel.uiState.value,
             )
         }
@@ -97,14 +117,14 @@ class AlbumListViewModelTest {
 
             coEvery {
                 repository.getTopAlbums()
-            } throws RuntimeException("network error") andThen albums
+            } throws AlbumException.NetworkException(IOException()) andThen albums
 
             val viewModel = AlbumListViewModel(repository)
 
             advanceUntilIdle()
 
             assertEquals(
-                AlbumListUiState.Error("network error"),
+                AlbumListUiState.Error(ErrorType.Network),
                 viewModel.uiState.value,
             )
 

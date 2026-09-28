@@ -69,7 +69,7 @@ fun AlbumListScreen(
 
             is AlbumListUiState.Error -> {
                 AlbumListErrorState(
-                    message = state.message,
+                    message = state.type.toMessage(),
                     onRetry = viewModel::retry,
                 )
             }

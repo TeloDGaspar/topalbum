@@ -26,7 +26,7 @@ internal abstract class AlbumModule {
 
     @Binds
     @Singleton
-    internal abstract fun bindBreedListRepository(
+    internal abstract fun bindAlbumListRepository(
         impl: AlbumListRepositoryImpl
     ): AlbumListRepository
 

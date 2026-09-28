@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed interface AlbumListUiState {
 
@@ -20,7 +21,7 @@ sealed interface AlbumListUiState {
     ) : AlbumListUiState
 
     data class Error(
-        val message: String,
+        val type: ErrorType,
     ) : AlbumListUiState
 }
 
@@ -35,21 +36,23 @@ class AlbumListViewModel@Inject constructor(
         loadAlbums()
     }
 
-    fun loadAlbums() {
+    private fun loadAlbums() {
         viewModelScope.launch {
             _uiState.value = AlbumListUiState.Loading
+            try {
+                val albums = repository.getTopAlbums()
 
-            runCatching {
-                repository.getTopAlbums()
-            }.onSuccess { albums ->
-                _uiState.value = when {
-                    albums.isEmpty() -> AlbumListUiState.Empty
-                    else -> AlbumListUiState.Success(albums)
-                }
-            }.onFailure { throwable ->
+                _uiState.value =
+                    if (albums.isEmpty()) {
+                        AlbumListUiState.Empty
+                    } else {
+                        AlbumListUiState.Success(albums)
+                    }
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
                 _uiState.value = AlbumListUiState.Error(
-                    message = throwable.message
-                        ?: "Something went wrong",
+                    type = exception.toErrorType()
                 )
             }
         }

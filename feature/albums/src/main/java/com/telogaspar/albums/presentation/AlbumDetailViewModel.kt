@@ -7,11 +7,13 @@ import androidx.navigation.toRoute
 import com.telogaspar.albums.domain.model.AlbumDetails
 import com.telogaspar.albums.domain.repository.AlbumListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 sealed interface AlbumDetailUiState {
 
@@ -22,7 +24,7 @@ sealed interface AlbumDetailUiState {
     ) : AlbumDetailUiState
 
     data class Error(
-        val message: String,
+        val type: ErrorType,
     ) : AlbumDetailUiState
 }
 
@@ -38,19 +40,22 @@ class AlbumDetailViewModel @Inject constructor(
 
     private var albumId: String? = null
 
+    private var loadJob: Job? = null
+
     fun loadAlbum(albumId: String) {
         this.albumId = albumId
 
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             _uiState.value = AlbumDetailUiState.Loading
-
-            runCatching {
-                repository.getDetailAlbum(albumId)
-            }.onSuccess { album ->
+            try {
+                val album = repository.getDetailAlbum(albumId)
                 _uiState.value = AlbumDetailUiState.Success(album)
-            }.onFailure { throwable ->
+            } catch (exception: CancellationException) {
+                throw exception
+            } catch (exception: Exception) {
                 _uiState.value = AlbumDetailUiState.Error(
-                    throwable.message ?: "Unable to load album details"
+                    type = exception.toErrorType(),
                 )
             }
         }

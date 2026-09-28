@@ -30,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.telogaspar.albums.domain.model.AlbumDetails
+import com.telogaspar.albums.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +77,7 @@ fun AlbumDetailScreen(
 
             is AlbumDetailUiState.Error -> {
                 AlbumDetailErrorState(
-                    message = state.message,
+                    message = state.type.toMessage(),
                     onRetry = viewModel::retry,
                     modifier = Modifier.padding(paddingValues),
                 )
@@ -161,10 +164,12 @@ internal fun AlbumDetailContent(
         AsyncImage(
             model = album.artworkUrl,
             contentDescription = "${album.name} artwork",
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(220.dp)
                 .clip(RoundedCornerShape(20.dp)),
-            contentScale = ContentScale.Crop,
+            placeholder = painterResource(R.drawable.ic_album_placeholder),
+            error = painterResource(R.drawable.ic_album_placeholder),
         )
 
         Spacer(

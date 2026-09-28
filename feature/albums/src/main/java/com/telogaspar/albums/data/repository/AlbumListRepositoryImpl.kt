@@ -13,6 +13,7 @@ import com.telogaspar.albums.domain.model.AlbumDetails
 import java.io.IOException
 import retrofit2.HttpException
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 internal class AlbumListRepositoryImpl @Inject constructor(
     private val remoteDataSource: TopAlbumsListRemoteDataSource,
@@ -23,37 +24,28 @@ internal class AlbumListRepositoryImpl @Inject constructor(
     private var cachedEntries: List<AlbumDto>? = null
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
-    override suspend fun getTopAlbums(): List<Album> {
-        return runCatching {
-            val entries = getEntries()
-
-            if (entries.isEmpty()) {
-                throw AlbumException.EmptyResultException()
-            }
-
-            albumMapper.map(entries)
-        }.getOrElse { throwable ->
-            throw throwable.toAlbumException()
+    override suspend fun getTopAlbums(): List<Album> =
+        mapErrors {
+            albumMapper.map(getEntries())
         }
 
-    }
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    override suspend fun getDetailAlbum(albumId: String): AlbumDetails =
+        mapErrors {
+            val dto = getEntries()
+                .firstOrNull { it.id.attributes.id == albumId }
+                ?: throw AlbumException.NotFoundException(albumId)
 
-    override suspend fun getDetailAlbum(albumId: String): AlbumDetails {
-        val albumDto = getEntries()
-            .firstOrNull { it.id.attributes.id == albumId }
-            ?: throw AlbumException.NotFoundException(albumId)
-
-        return albumDetailsMapper.map(albumDto)
-    }
+            albumDetailsMapper.map(dto)
+        }
 
     private suspend fun getEntries(): List<AlbumDto> {
         cachedEntries?.let { return it }
 
-        val response = remoteDataSource.fetchAlbumList()
-
-        return response.feed.entry.also {
-            cachedEntries = it
-        }
+        return remoteDataSource.fetchAlbumList()
+            .feed
+            .entry
+            .also { cachedEntries = it }
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -66,5 +58,17 @@ internal class AlbumListRepositoryImpl @Inject constructor(
             )
             is IOException -> AlbumException.NetworkException(this)
             else -> AlbumException.UnknownException(this)
+        }
+
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
+    private suspend fun <T> mapErrors(
+        block: suspend () -> T,
+    ): T =
+        try {
+            block()
+        } catch (exception: CancellationException) {
+            throw exception
+        } catch (exception: Exception) {
+            throw exception.toAlbumException()
         }
 }
