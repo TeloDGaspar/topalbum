@@ -1,14 +1,6 @@
 package com.telogaspar.albums.presentation
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,26 +14,31 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import com.telogaspar.albums.domain.model.AlbumDetails
 import com.telogaspar.albums.R
+import com.telogaspar.albums.domain.model.AlbumDetails
+import com.telogaspar.albums.presentation.components.ErrorState
+import com.telogaspar.albums.presentation.components.LoadingState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlbumDetailScreen(
     viewModel: AlbumDetailViewModel = hiltViewModel(),
@@ -49,7 +46,23 @@ fun AlbumDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    AlbumDetailScreen(
+        uiState = uiState,
+        onRetry = viewModel::retry,
+        onBackClick = onBackClick,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AlbumDetailScreen(
+    uiState: AlbumDetailUiState,
+    onRetry: () -> Unit,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Scaffold(
+        modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
@@ -68,86 +81,34 @@ fun AlbumDetailScreen(
             )
         },
     ) { paddingValues ->
-        when (val state = uiState) {
+        when (uiState) {
             AlbumDetailUiState.Loading -> {
-                AlbumDetailLoadingState(
+                LoadingState(
                     modifier = Modifier.padding(paddingValues),
                 )
             }
 
             is AlbumDetailUiState.Error -> {
-                AlbumDetailErrorState(
-                    message = state.type.toMessage(),
-                    onRetry = viewModel::retry,
+                val isRetryable = uiState.type.isRetryable
+
+                ErrorState(
+                    title = "Unable to load album",
+                    message = uiState.type.toMessage(),
+                    actionLabel = if (isRetryable) "Retry" else "Go back",
+                    onAction = if (isRetryable) onRetry else onBackClick,
                     modifier = Modifier.padding(paddingValues),
                 )
             }
 
             is AlbumDetailUiState.Success -> {
                 AlbumDetailContent(
-                    album = state.details,
+                    album = uiState.details,
                     modifier = Modifier.padding(paddingValues),
                 )
             }
         }
     }
 }
-
-@Composable
-internal fun AlbumDetailErrorState(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = "Unable to load album",
-            style = MaterialTheme.typography.titleMedium,
-        )
-
-        Spacer(
-            modifier = Modifier.height(8.dp),
-        )
-
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(
-            modifier = Modifier.height(16.dp),
-        )
-
-        Button(
-            onClick = onRetry,
-        ) {
-            Text("Retry")
-        }
-    }
-}
-
-
-@Composable
-internal fun AlbumDetailLoadingState(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-
 
 @Composable
 internal fun AlbumDetailContent(

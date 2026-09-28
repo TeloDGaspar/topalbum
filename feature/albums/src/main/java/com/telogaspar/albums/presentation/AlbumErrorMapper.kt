@@ -6,7 +6,10 @@ enum class ErrorType {
     Network,
     Server,
     NotFound,
-    Unknown,
+    Unknown;
+
+    val isRetryable: Boolean
+        get() = this != NotFound
 }
 
 internal fun ErrorType.toMessage(): String =

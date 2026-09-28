@@ -1,7 +1,6 @@
 package com.telogaspar.albums.data.repository
 
-import android.os.Build
-import androidx.annotation.RequiresExtension
+import android.util.Log
 import com.telogaspar.albums.data.mapper.AlbumDetailsMapper
 import com.telogaspar.albums.data.mapper.AlbumMapper
 import com.telogaspar.albums.data.remote.AlbumDto
@@ -23,13 +22,11 @@ internal class AlbumListRepositoryImpl @Inject constructor(
 
     private var cachedEntries: List<AlbumDto>? = null
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun getTopAlbums(): List<Album> =
         mapErrors {
             albumMapper.map(getEntries())
         }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun getDetailAlbum(albumId: String): AlbumDetails =
         mapErrors {
             val dto = getEntries()
@@ -48,7 +45,6 @@ internal class AlbumListRepositoryImpl @Inject constructor(
             .also { cachedEntries = it }
     }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private fun Throwable.toAlbumException(): AlbumException =
         when (this) {
             is AlbumException -> this
@@ -60,7 +56,6 @@ internal class AlbumListRepositoryImpl @Inject constructor(
             else -> AlbumException.UnknownException(this)
         }
 
-    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     private suspend fun <T> mapErrors(
         block: suspend () -> T,
     ): T =
@@ -69,6 +64,11 @@ internal class AlbumListRepositoryImpl @Inject constructor(
         } catch (exception: CancellationException) {
             throw exception
         } catch (exception: Exception) {
+            Log.e(TAG, "Album request failed", exception)
             throw exception.toAlbumException()
         }
+
+    private companion object {
+        const val TAG = "AlbumRepository"
+    }
 }

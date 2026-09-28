@@ -3,7 +3,6 @@ package com.telogaspar.albums.presentation
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,13 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,16 +24,25 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.telogaspar.albums.R
 import com.telogaspar.albums.domain.model.Album
+import com.telogaspar.albums.presentation.components.EmptyState
+import com.telogaspar.albums.presentation.components.ErrorState
+import com.telogaspar.albums.presentation.components.LoadingState
 
 @Composable
 fun AlbumListScreen(
@@ -49,34 +50,53 @@ fun AlbumListScreen(
     onAlbumClick: (String) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    AlbumListScreen(
+        uiState = uiState,
+        onRetry = viewModel::retry,
+        onAlbumClick = onAlbumClick,
+    )
+}
+
+@Composable
+internal fun AlbumListScreen(
+    uiState: AlbumListUiState,
+    onRetry: () -> Unit,
+    onAlbumClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val listState = rememberLazyListState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
         AlbumListAppBar()
 
-        when (val state = uiState) {
+        when (uiState) {
             AlbumListUiState.Loading -> {
-                AlbumListLoadingState()
+                LoadingState()
             }
 
             AlbumListUiState.Empty -> {
-                AlbumListEmptyState()
+                EmptyState(
+                    message = "No albums available",
+                )
             }
 
             is AlbumListUiState.Error -> {
-                AlbumListErrorState(
-                    message = state.type.toMessage(),
-                    onRetry = viewModel::retry,
+                ErrorState(
+                    title = "Unable to load albums",
+                    message = uiState.type.toMessage(),
+                    actionLabel = "Retry",
+                    onAction = onRetry,
                 )
             }
 
             is AlbumListUiState.Success -> {
                 AlbumListColumn(
-                    albums = state.albums,
+                    albums = uiState.albums,
                     listState = listState,
                     onAlbumClick = onAlbumClick,
                 )
@@ -139,6 +159,8 @@ internal fun AlbumRowCard(
                     .size(80.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop,
+                placeholder = painterResource(R.drawable.ic_album_placeholder),
+                error = painterResource(R.drawable.ic_album_placeholder),
             )
 
             Spacer(
@@ -195,70 +217,4 @@ internal fun AlbumListAppBar() {
             }
         },
     )
-}
-
-@Composable
-internal fun AlbumListLoadingState() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-internal fun AlbumListErrorState(
-    message: String,
-    onRetry: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = "Unable to load albums",
-            style = MaterialTheme.typography.titleMedium,
-        )
-
-        Spacer(
-            modifier = Modifier.height(8.dp),
-        )
-
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(
-            modifier = Modifier.height(16.dp),
-        )
-
-        Button(
-            onClick = onRetry,
-        ) {
-            Text("Retry")
-        }
-    }
-}
-
-@Composable
-internal fun AlbumListEmptyState() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = "No albums available",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-    }
 }

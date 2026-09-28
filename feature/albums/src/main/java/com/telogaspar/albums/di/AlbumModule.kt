@@ -33,7 +33,7 @@ internal abstract class AlbumModule {
     companion object {
         @Provides
         @Singleton
-        fun provideBreedsEventApi(retrofit: Retrofit): TopAlbumsApi =
+        fun provideAlbumEventApi(retrofit: Retrofit): TopAlbumsApi =
             retrofit.create(TopAlbumsApi::class.java)
     }
 }
