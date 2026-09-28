@@ -1,0 +1,216 @@
+{
+  "feed": {
+    "author": {
+      "name": {
+        "label": "iTunes Store"
+      },
+      "uri": {
+        "label": "http://www.apple.com/itunes/"
+      }
+    },
+    "entry": [
+      {
+        "im:name": {
+          "label": "Silver Sands Marina"
+        },
+        "im:image": [
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d4/66/3e/d4663e69-0e75-f803-ad91-d3fa5701c72d/093624817796.jpg/55x55bb.png",
+            "attributes": {
+              "height": "55"
+            }
+          },
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d4/66/3e/d4663e69-0e75-f803-ad91-d3fa5701c72d/093624817796.jpg/60x60bb.png",
+            "attributes": {
+              "height": "60"
+            }
+          },
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/d4/66/3e/d4663e69-0e75-f803-ad91-d3fa5701c72d/093624817796.jpg/170x170bb.png",
+            "attributes": {
+              "height": "170"
+            }
+          }
+        ],
+        "im:itemCount": {
+          "label": "11"
+        },
+        "im:price": {
+          "label": "$6.99",
+          "attributes": {
+            "amount": "6.99",
+            "currency": "USD"
+          }
+        },
+        "im:contentType": {
+          "im:contentType": {
+            "attributes": {
+              "term": "Album",
+              "label": "Album"
+            }
+          },
+          "attributes": {
+            "term": "Music",
+            "label": "Music"
+          }
+        },
+        "rights": {
+          "label": "\u2117 2026 HEY NOW Records, distributed by Warner Records Inc."
+        },
+        "title": {
+          "label": "Silver Sands Marina - Kenny Chesney"
+        },
+        "link": {
+          "attributes": {
+            "rel": "alternate",
+            "type": "text/html",
+            "href": "https://music.apple.com/us/album/silver-sands-marina/6778607425?uo=2"
+          }
+        },
+        "id": {
+          "label": "https://music.apple.com/us/album/silver-sands-marina/6778607425?uo=2",
+          "attributes": {
+            "im:id": "6778607425"
+          }
+        },
+        "im:artist": {
+          "label": "Kenny Chesney",
+          "attributes": {
+            "href": "https://music.apple.com/us/artist/kenny-chesney/205322?uo=2"
+          }
+        },
+        "category": {
+          "attributes": {
+            "im:id": "6",
+            "term": "Country",
+            "scheme": "https://music.apple.com/us/genre/music-country/id6?uo=2",
+            "label": "Country"
+          }
+        },
+        "im:releaseDate": {
+          "label": "2026-09-25T00:00:00-07:00",
+          "attributes": {
+            "label": "September 25, 2026"
+          }
+        }
+      },
+      {
+        "im:name": {
+          "label": "I'm So Happy"
+        },
+        "im:image": [
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/0b/88/df/0b88df94-ec02-412b-a6bc-9ebef710142b/820233141529.jpg/55x55bb.png",
+            "attributes": {
+              "height": "55"
+            }
+          },
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/0b/88/df/0b88df94-ec02-412b-a6bc-9ebef710142b/820233141529.jpg/60x60bb.png",
+            "attributes": {
+              "height": "60"
+            }
+          },
+          {
+            "label": "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/0b/88/df/0b88df94-ec02-412b-a6bc-9ebef710142b/820233141529.jpg/170x170bb.png",
+            "attributes": {
+              "height": "170"
+            }
+          }
+        ],
+        "im:itemCount": {
+          "label": "23"
+        },
+        "im:price": {
+          "label": "$5.99",
+          "attributes": {
+            "amount": "5.99",
+            "currency": "USD"
+          }
+        },
+        "im:contentType": {
+          "im:contentType": {
+            "attributes": {
+              "term": "Album",
+              "label": "Album"
+            }
+          },
+          "attributes": {
+            "term": "Music",
+            "label": "Music"
+          }
+        },
+        "rights": {
+          "label": "\u2117 2026 Songs For Littles, LLC"
+        },
+        "title": {
+          "label": "I'm So Happy - Ms. Rachel"
+        },
+        "link": {
+          "attributes": {
+            "rel": "alternate",
+            "type": "text/html",
+            "href": "https://music.apple.com/us/album/im-so-happy/6792048044?uo=2"
+          }
+        },
+        "id": {
+          "label": "https://music.apple.com/us/album/im-so-happy/6792048044?uo=2",
+          "attributes": {
+            "im:id": "6792048044"
+          }
+        },
+        "im:artist": {
+          "label": "Ms. Rachel",
+          "attributes": {
+            "href": "https://books.apple.com/us/author/ms-rachel/id1733956832?uo=2"
+          }
+        },
+        "category": {
+          "attributes": {
+            "im:id": "4",
+            "term": "Children's Music",
+            "scheme": "https://music.apple.com/us/genre/music-childrens-music/id4?uo=2",
+            "label": "Children's Music"
+          }
+        },
+        "im:releaseDate": {
+          "label": "2026-09-25T00:00:00-07:00",
+          "attributes": {
+            "label": "September 25, 2026"
+          }
+        }
+      }
+    ],
+    "updated": {
+      "label": "2026-09-28T15:20:57-07:00"
+    },
+    "rights": {
+      "label": "Copyright 2008 Apple Inc."
+    },
+    "title": {
+      "label": "iTunes Store: Top Albums"
+    },
+    "icon": {
+      "label": "http://itunes.apple.com/favicon.ico"
+    },
+    "link": [
+      {
+        "attributes": {
+          "rel": "alternate",
+          "type": "text/html",
+          "href": "https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewTop?cc=us&id=1&popId=11"
+        }
+      },
+      {
+        "attributes": {
+          "rel": "self",
+          "href": "https://itunes.apple.com/us/rss/topalbums/limit=2/json"
+        }
+      }
+    ],
+    "id": {
+      "label": "https://itunes.apple.com/us/rss/topalbums/limit=2/json"
+    }
+  }
+}
